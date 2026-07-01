@@ -1,0 +1,21 @@
+Project validation report
+
+[PASS] exists: data\raw\boston_raw.txt
+[PASS] exists: data\processed\boston_clean.csv
+[PASS] exists: reports\model_metrics.csv
+[PASS] exists: reports\test_predictions.csv
+[PASS] exists: reports\analysis.txt
+[PASS] exists: models\scaler.joblib
+[PASS] exists: models\model_metadata.json
+[PASS] exists: app.py
+[PASS] exists: src\data.py
+[PASS] exists: src\modeling.py
+[PASS] exists: src\train.py
+[PASS] does not use sklearn load_boston
+[PASS] clean data has 506 rows and 14 columns
+[PASS] clean data has no missing values
+[PASS] metrics include 4 trained models
+[PASS] metrics include MSE RMSE MAE R2
+[PASS] metadata records best model
+[PASS] best model artifact exists
+[PASS] at least 6 training figures exist

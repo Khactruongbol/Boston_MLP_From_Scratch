@@ -1,0 +1,39 @@
+{
+  "best_model": "Random Forest Regression",
+  "best_model_type": "sklearn",
+  "best_model_path": "models\\best_model.joblib",
+  "scaler_path": "models\\scaler.joblib",
+  "selection_metric": "RMSE",
+  "selection_rule": "Lowest RMSE on the held-out test set",
+  "metrics": {
+    "model": "Random Forest Regression",
+    "MSE": 7.890017921568628,
+    "RMSE": 2.808917571159508,
+    "MAE": 2.0380980392156864,
+    "R2": 0.8924095064846252
+  },
+  "figures": [
+    "reports\\figures\\actual_vs_predicted_mlp_regression.png",
+    "reports\\figures\\mlp_training_curve.png",
+    "reports\\figures\\actual_vs_predicted_linear_regression.png",
+    "reports\\figures\\actual_vs_predicted_decision_tree_regression.png",
+    "reports\\figures\\actual_vs_predicted_random_forest_regression.png",
+    "reports\\figures\\model_rmse_comparison.png",
+    "reports\\figures\\best_model_feature_importance.png"
+  ],
+  "features": [
+    "CRIM",
+    "ZN",
+    "INDUS",
+    "CHAS",
+    "NOX",
+    "RM",
+    "AGE",
+    "DIS",
+    "RAD",
+    "TAX",
+    "PTRATIO",
+    "B",
+    "LSTAT"
+  ]
+}
