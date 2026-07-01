@@ -44,3 +44,23 @@ def test_report_notebook_has_only_markdown_and_existing_images():
     assert len(image_links) >= 8
     missing = [path for path in image_links if not path.exists()]
     assert not missing
+
+
+def test_report_notebook_contains_required_vietnamese_sections():
+    notebook = json.loads(REPORT_NOTEBOOK_PATH.read_text(encoding="utf-8"))
+    report_text = "\n".join("".join(cell.get("source", [])) for cell in notebook["cells"])
+    required_terms = [
+        "Define problem",
+        "Định nghĩa bài toán",
+        "Hướng giải quyết",
+        "Sử dụng những gì",
+        "Data lấy từ đâu",
+        "cách lấy data",
+        "Cách lọc data sạch",
+        "Số lượng feature: **13**",
+        "Hình ảnh sau khi train",
+        "Kết luận model",
+    ]
+    for term in required_terms:
+        assert term in report_text
+    assert "\ufffd" not in report_text

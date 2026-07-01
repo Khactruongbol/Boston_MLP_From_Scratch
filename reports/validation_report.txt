@@ -23,3 +23,5 @@ Project validation report
 [PASS] report notebook has no code cells
 [PASS] report notebook contains model images
 [PASS] all report notebook image links exist
+[PASS] report notebook includes required explanation sections
+[PASS] report notebook text has valid Vietnamese UTF-8

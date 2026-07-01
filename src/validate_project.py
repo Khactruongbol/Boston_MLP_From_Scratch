@@ -37,6 +37,11 @@ def notebook_image_paths(notebook_path: Path) -> list[Path]:
     return image_paths
 
 
+def notebook_text(notebook_path: Path) -> str:
+    notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+    return "\n".join("".join(cell.get("source", [])) for cell in notebook.get("cells", []))
+
+
 def validate_project() -> list[str]:
     checks: list[tuple[str, bool]] = []
 
@@ -76,10 +81,25 @@ def validate_project() -> list[str]:
 
     notebook = json.loads(REPORT_NOTEBOOK_PATH.read_text(encoding="utf-8"))
     notebook_cells = notebook.get("cells", [])
+    report_text = notebook_text(REPORT_NOTEBOOK_PATH)
     image_paths = notebook_image_paths(REPORT_NOTEBOOK_PATH)
     checks.append(("report notebook has no code cells", all(cell.get("cell_type") != "code" for cell in notebook_cells)))
     checks.append(("report notebook contains model images", len(image_paths) >= 8))
     checks.append(("all report notebook image links exist", all(path.exists() for path in image_paths)))
+    required_report_terms = [
+        "Define problem",
+        "Định nghĩa bài toán",
+        "Hướng giải quyết",
+        "Sử dụng những gì",
+        "Data lấy từ đâu",
+        "cách lấy data",
+        "Cách lọc data sạch",
+        "Số lượng feature: **13**",
+        "Hình ảnh sau khi train",
+        "Kết luận model",
+    ]
+    checks.append(("report notebook includes required explanation sections", all(term in report_text for term in required_report_terms)))
+    checks.append(("report notebook text has valid Vietnamese UTF-8", "\ufffd" not in report_text))
 
     failed = [name for name, passed in checks if not passed]
     report_lines = ["Project validation report", ""]
