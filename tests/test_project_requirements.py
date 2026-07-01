@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
+import re
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+REPORT_NOTEBOOK_PATH = PROJECT_ROOT / "notebooks" / "99_boston_housing_model_images_report.ipynb"
 
 
 def test_project_does_not_use_removed_load_boston_api():
@@ -18,9 +21,26 @@ def test_required_project_files_exist():
         "src/modeling.py",
         "src/train.py",
         "app.py",
+        "notebooks/99_boston_housing_model_images_report.ipynb",
         "requirements.txt",
         "README.md",
     ]
     for relative_path in required_paths:
         assert (PROJECT_ROOT / relative_path).exists(), relative_path
 
+
+def test_report_notebook_has_only_markdown_and_existing_images():
+    notebook = json.loads(REPORT_NOTEBOOK_PATH.read_text(encoding="utf-8"))
+    cells = notebook["cells"]
+    assert cells
+    assert all(cell["cell_type"] == "markdown" for cell in cells)
+
+    image_links: list[Path] = []
+    for cell in cells:
+        source = "".join(cell.get("source", []))
+        for match in re.findall(r"!\[[^\]]*\]\(([^)]+)\)", source):
+            image_links.append((REPORT_NOTEBOOK_PATH.parent / match).resolve())
+
+    assert len(image_links) >= 8
+    missing = [path for path in image_links if not path.exists()]
+    assert not missing

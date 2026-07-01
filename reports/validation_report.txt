@@ -8,6 +8,7 @@ Project validation report
 [PASS] exists: models\scaler.joblib
 [PASS] exists: models\model_metadata.json
 [PASS] exists: app.py
+[PASS] exists: notebooks\99_boston_housing_model_images_report.ipynb
 [PASS] exists: src\data.py
 [PASS] exists: src\modeling.py
 [PASS] exists: src\train.py
@@ -19,3 +20,6 @@ Project validation report
 [PASS] metadata records best model
 [PASS] best model artifact exists
 [PASS] at least 6 training figures exist
+[PASS] report notebook has no code cells
+[PASS] report notebook contains model images
+[PASS] all report notebook image links exist

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -20,6 +21,22 @@ from src.config import (
 )
 
 
+REPORT_NOTEBOOK_PATH = PROJECT_ROOT / "notebooks" / "99_boston_housing_model_images_report.ipynb"
+MARKDOWN_IMAGE_PATTERN = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+
+
+def notebook_image_paths(notebook_path: Path) -> list[Path]:
+    notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
+    image_paths: list[Path] = []
+    for cell in notebook.get("cells", []):
+        source = "".join(cell.get("source", []))
+        for match in MARKDOWN_IMAGE_PATTERN.findall(source):
+            if match.startswith(("http://", "https://")):
+                continue
+            image_paths.append((notebook_path.parent / match).resolve())
+    return image_paths
+
+
 def validate_project() -> list[str]:
     checks: list[tuple[str, bool]] = []
 
@@ -32,6 +49,7 @@ def validate_project() -> list[str]:
         SCALER_PATH,
         MODEL_METADATA_PATH,
         PROJECT_ROOT / "app.py",
+        REPORT_NOTEBOOK_PATH,
         PROJECT_ROOT / "src" / "data.py",
         PROJECT_ROOT / "src" / "modeling.py",
         PROJECT_ROOT / "src" / "train.py",
@@ -55,6 +73,13 @@ def validate_project() -> list[str]:
     checks.append(("metadata records best model", bool(metadata.get("best_model"))))
     checks.append(("best model artifact exists", BEST_MODEL_PATH.exists() or BEST_MODEL_KERAS_PATH.exists()))
     checks.append(("at least 6 training figures exist", len(list(FIGURE_DIR.glob("*.png"))) >= 6))
+
+    notebook = json.loads(REPORT_NOTEBOOK_PATH.read_text(encoding="utf-8"))
+    notebook_cells = notebook.get("cells", [])
+    image_paths = notebook_image_paths(REPORT_NOTEBOOK_PATH)
+    checks.append(("report notebook has no code cells", all(cell.get("cell_type") != "code" for cell in notebook_cells)))
+    checks.append(("report notebook contains model images", len(image_paths) >= 8))
+    checks.append(("all report notebook image links exist", all(path.exists() for path in image_paths)))
 
     failed = [name for name, passed in checks if not passed]
     report_lines = ["Project validation report", ""]
