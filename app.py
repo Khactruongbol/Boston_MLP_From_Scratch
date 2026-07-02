@@ -42,10 +42,10 @@ def load_best_model(metadata: dict):
     return joblib.load(BEST_MODEL_PATH)
 
 
-def predict_price(feature_values: dict[str, float], model, scaler) -> float:
+def predict_price(feature_values: dict[str, float], model, scaler=None, model_contains_scaler: bool = False) -> float:
     input_df = pd.DataFrame([feature_values], columns=FEATURE_NAMES)
-    input_scaled = scaler.transform(input_df)
-    prediction = model.predict(input_scaled)
+    model_input = input_df if model_contains_scaler else scaler.transform(input_df)
+    prediction = model.predict(model_input)
     return float(np.asarray(prediction).reshape(-1)[0])
 
 
@@ -55,7 +55,8 @@ def main() -> None:
 
     try:
         metadata = load_metadata()
-        scaler = joblib.load(SCALER_PATH)
+        model_contains_scaler = bool(metadata.get("model_contains_scaler", False))
+        scaler = None if model_contains_scaler else joblib.load(SCALER_PATH)
         model = load_best_model(metadata)
     except Exception as exc:
         st.error(str(exc))
@@ -76,7 +77,7 @@ def main() -> None:
             )
 
     if st.button("Predict MEDV"):
-        predicted_value = predict_price(feature_values, model, scaler)
+        predicted_value = predict_price(feature_values, model, scaler, model_contains_scaler)
         st.metric("Predicted MEDV", f"{predicted_value:.2f} thousand USD")
 
     st.subheader("Model Metrics")
@@ -89,4 +90,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

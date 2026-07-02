@@ -3,6 +3,8 @@ Project validation report
 [PASS] exists: data\raw\boston_raw.txt
 [PASS] exists: data\processed\boston_clean.csv
 [PASS] exists: reports\model_metrics.csv
+[PASS] exists: reports\optimized_model_metrics.csv
+[PASS] exists: reports\tuning_results.csv
 [PASS] exists: reports\test_predictions.csv
 [PASS] exists: reports\analysis.txt
 [PASS] exists: models\scaler.joblib
@@ -15,11 +17,19 @@ Project validation report
 [PASS] does not use sklearn load_boston
 [PASS] clean data has 506 rows and 14 columns
 [PASS] clean data has no missing values
-[PASS] metrics include 4 trained models
+[PASS] metrics include baseline and tuned models
 [PASS] metrics include MSE RMSE MAE R2
+[PASS] metrics include tuned model candidates
+[PASS] optimized metrics match model metrics
+[PASS] tuning results include CV RMSE
+[PASS] tuning results include train-only candidates
 [PASS] metadata records best model
+[PASS] metadata records best params
+[PASS] metadata records CV and test metrics
+[PASS] metadata records scaler ownership
+[PASS] best model RMSE meets acceptance
 [PASS] best model artifact exists
-[PASS] at least 6 training figures exist
+[PASS] at least 8 training figures exist
 [PASS] report notebook has no code cells
 [PASS] report notebook contains model images
 [PASS] all report notebook image links exist

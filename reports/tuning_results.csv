@@ -1,0 +1,5 @@
+model,candidate_type,cv_rmse,params
+Decision Tree Tuned,GridSearchCV,4.95020441036929,"{""model__max_depth"": 5, ""model__min_samples_leaf"": 2, ""model__min_samples_split"": 10}"
+Random Forest Tuned,GridSearchCV,3.8098002555277324,"{""model__max_depth"": 10, ""model__max_features"": 1.0, ""model__min_samples_leaf"": 2, ""model__min_samples_split"": 2, ""model__n_estimators"": 100}"
+MLP Regression,train_validation_split,4.250440013771391,"{""batch_size"": 32, ""early_stopping"": false, ""epochs"": 100, ""hidden_layers"": [32, 16], ""learning_rate"": 0.001}"
+MLP Tuned,train_validation_split,3.6055232381784648,"{""batch_size"": 16, ""early_stopping"": true, ""epochs"": 200, ""hidden_layers"": [64, 32], ""learning_rate"": 0.001}"

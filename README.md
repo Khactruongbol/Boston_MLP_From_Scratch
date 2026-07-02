@@ -1,66 +1,72 @@
-# Boston Housing MLP Regression - Rebuild From Scratch
+# Boston Housing MLP Regression - Lab 4
 
-Project này được làm lại từ đầu theo đúng quy trình:
+Project này làm lại quy trình dự đoán giá nhà Boston Housing từ đầu và có thêm bước tối ưu hiệu năng model.
 
-1. Cào data thô từ StatLib/CMU.
-2. Lọc và kiểm tra data sạch.
+## Mục tiêu
+
+1. Cào raw data từ StatLib/CMU.
+2. Reconstruct và lọc dữ liệu sạch.
 3. Chia feature `X` và target `MEDV`.
-4. Train nhiều model regression.
-5. Chọn model tối ưu nhất theo RMSE thấp nhất trên test set.
-6. Lưu các ảnh sau khi train.
-7. Test các model bằng MSE, RMSE, MAE và R2.
-8. Tạo giao diện Python bằng Streamlit sử dụng model tốt nhất.
-9. Kiểm tra lại toàn bộ chương trình bằng `pytest`.
-10. Tạo Git repo cho toàn bộ chương trình.
+4. Train các model regression bắt buộc.
+5. Tune model trên train set, không dùng test set để chọn hyperparameter.
+6. Chọn best model theo RMSE thấp nhất trên held-out test set.
+7. Lưu model, scaler, metric, tuning report và hình ảnh sau khi train.
+8. Cung cấp giao diện Python bằng Streamlit để dự đoán bằng best model.
+9. Kiểm tra toàn bộ chương trình bằng `pytest` và validation script.
 
-## Cấu Trúc
+## Cấu trúc chính
 
 ```text
-data/raw/                 data thô đã cào
-data/processed/           data sạch
-models/                   scaler, model tốt nhất, metadata
-reports/                  metric, prediction, analysis
-reports/figures/          ảnh sau train
-src/data.py               cào data, làm sạch, chia feature
-src/modeling.py           train, test, chọn model, lưu artifact
-src/train.py              chạy toàn bộ pipeline
-app.py                    giao diện Python Streamlit
-tests/                    kiểm tra chương trình
+data/raw/                 Raw data đã cào
+data/processed/           Data sạch
+models/                   Best model, scaler, metadata
+reports/                  Metrics, tuning results, predictions, analysis
+reports/figures/          Hình ảnh model và validation
+notebooks/                Notebook báo cáo ảnh-only, không có code cell
+src/data.py               Cào data, reconstruct, clean, chia feature
+src/modeling.py           Train, tune, evaluate, chọn model, lưu artifact
+src/train.py              Chạy toàn bộ pipeline
+src/validate_project.py   Kiểm tra yêu cầu project
+app.py                    Giao diện Streamlit
+tests/                    Test tự động
 ```
 
-## Cài Đặt
+## Cài đặt
 
 ```powershell
 pip install -r requirements.txt
 ```
 
-## Chạy Pipeline
+## Chạy training và tối ưu model
 
 ```powershell
 python -m src.train
 ```
 
-Kết quả được lưu vào:
+Kết quả chính:
 
-- `data/raw/boston_raw.txt`
-- `data/processed/boston_clean.csv`
-- `models/`
 - `reports/model_metrics.csv`
+- `reports/optimized_model_metrics.csv`
+- `reports/tuning_results.csv`
 - `reports/test_predictions.csv`
 - `reports/analysis.txt`
+- `models/model_metadata.json`
+- `models/best_model.joblib` hoặc `models/best_model.keras`
 - `reports/figures/`
 
-## Chạy Giao Diện
+## Chạy giao diện
 
 ```powershell
 streamlit run app.py
 ```
 
-Giao diện sẽ load scaler và model tốt nhất đã được lưu sau khi chạy training.
+App sẽ đọc metadata để biết best model có chứa scaler bên trong hay cần dùng scaler riêng.
 
-## Kiểm Tra
+## Kiểm tra
 
 ```powershell
-pytest -q
+python -m pytest -q
 python -m src.validate_project
 ```
+
+Validation kiểm tra các yêu cầu: không dùng `load_boston`, data sạch đúng shape, có tuned models, metadata có best params/CV RMSE/test RMSE, notebook không có code cell và tất cả ảnh trong notebook đều tồn tại.

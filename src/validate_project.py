@@ -13,11 +13,13 @@ from src.config import (
     FIGURE_DIR,
     METRICS_PATH,
     MODEL_METADATA_PATH,
+    OPTIMIZED_METRICS_PATH,
     PREDICTIONS_PATH,
     PROCESSED_DATA_PATH,
     PROJECT_ROOT,
     RAW_DATA_PATH,
     SCALER_PATH,
+    TUNING_RESULTS_PATH,
 )
 
 
@@ -49,6 +51,8 @@ def validate_project() -> list[str]:
         RAW_DATA_PATH,
         PROCESSED_DATA_PATH,
         METRICS_PATH,
+        OPTIMIZED_METRICS_PATH,
+        TUNING_RESULTS_PATH,
         PREDICTIONS_PATH,
         ANALYSIS_PATH,
         SCALER_PATH,
@@ -71,13 +75,25 @@ def validate_project() -> list[str]:
     checks.append(("clean data has no missing values", not clean_df.isna().any().any()))
 
     metrics_df = pd.read_csv(METRICS_PATH)
-    checks.append(("metrics include 4 trained models", metrics_df.shape[0] == 4))
+    checks.append(("metrics include baseline and tuned models", metrics_df.shape[0] >= 6))
     checks.append(("metrics include MSE RMSE MAE R2", set(["MSE", "RMSE", "MAE", "R2"]).issubset(metrics_df.columns)))
+    checks.append(("metrics include tuned model candidates", metrics_df["model"].str.contains("Tuned").any()))
+
+    optimized_metrics_df = pd.read_csv(OPTIMIZED_METRICS_PATH)
+    checks.append(("optimized metrics match model metrics", optimized_metrics_df.shape == metrics_df.shape))
+
+    tuning_df = pd.read_csv(TUNING_RESULTS_PATH)
+    checks.append(("tuning results include CV RMSE", set(["model", "candidate_type", "cv_rmse", "params"]).issubset(tuning_df.columns)))
+    checks.append(("tuning results include train-only candidates", len(tuning_df) >= 4))
 
     metadata = json.loads(MODEL_METADATA_PATH.read_text(encoding="utf-8"))
     checks.append(("metadata records best model", bool(metadata.get("best_model"))))
+    checks.append(("metadata records best params", "best_params" in metadata))
+    checks.append(("metadata records CV and test metrics", {"cv_rmse", "test_rmse", "test_r2"}.issubset(metadata)))
+    checks.append(("metadata records scaler ownership", "model_contains_scaler" in metadata))
+    checks.append(("best model RMSE meets acceptance", float(metadata.get("test_rmse", 999)) <= float(metadata.get("reference_rmse", 2.808917571159508)) + 1e-12))
     checks.append(("best model artifact exists", BEST_MODEL_PATH.exists() or BEST_MODEL_KERAS_PATH.exists()))
-    checks.append(("at least 6 training figures exist", len(list(FIGURE_DIR.glob("*.png"))) >= 6))
+    checks.append(("at least 8 training figures exist", len(list(FIGURE_DIR.glob("*.png"))) >= 8))
 
     notebook = json.loads(REPORT_NOTEBOOK_PATH.read_text(encoding="utf-8"))
     notebook_cells = notebook.get("cells", [])
@@ -98,6 +114,7 @@ def validate_project() -> list[str]:
         "Hình ảnh sau khi train",
         "Kết luận model",
     ]
+    required_report_terms.append("Model optimization")
     checks.append(("report notebook includes required explanation sections", all(term in report_text for term in required_report_terms)))
     checks.append(("report notebook text has valid Vietnamese UTF-8", "\ufffd" not in report_text))
 

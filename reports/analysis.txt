@@ -3,11 +3,13 @@ Boston Housing Regression Training Analysis
 Data source: raw Boston Housing data crawled from StatLib/CMU.
 Cleaning: numeric conversion, duplicate removal, missing-value removal, schema validation.
 Feature split: 13 Boston Housing features are used to predict MEDV.
-Model selection: the best model is selected by the lowest RMSE on the same held-out test set.
+Optimization: sklearn models use train-only GridSearchCV pipelines, and MLP candidates use a train-validation split with early stopping where configured.
+Model selection: the best model is selected by the lowest RMSE on the held-out test set after tuning is complete.
 
 Best model by RMSE: Random Forest Regression (RMSE=2.8089, R2=0.8924).
 Best model by R2: Random Forest Regression (R2=0.8924, RMSE=2.8089).
-MLP Regression: MSE=12.6169, RMSE=3.5520, MAE=2.4526, R2=0.8280.
+MLP Regression: MSE=15.4683, RMSE=3.9330, MAE=2.5403, R2=0.7891.
+No tuned candidate improved over the Random Forest baseline; retained the strongest held-out test model.
 
 Saved best model: models\best_model.joblib
 Saved scaler: models\scaler.joblib
